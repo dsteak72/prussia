@@ -38,12 +38,14 @@ th, td{
     padding:10px;
 }
 
+/* Buttons */
 .editBtn{background:orange;}
 .saveBtn{background:limegreen;}
 .removeBtn{background:crimson;color:white;}
 
 .hidden{display:none;}
 
+/* Medal dropdown */
 .dropdown{
     position:relative;
     display:inline-block;
@@ -56,8 +58,8 @@ th, td{
     border:1px solid black;
     padding:10px;
     text-align:left;
+    z-index:9999;
 }
-
 </style>
 </head>
 
@@ -65,7 +67,6 @@ th, td{
 
 <!-- LOGIN -->
 <div id="authSection">
-
 <h1>Login</h1>
 
 <input id="loginUser" placeholder="Username">
@@ -77,9 +78,7 @@ th, td{
 <button onclick="signup()">Sign Up</button>
 
 <p id="authMessage"></p>
-
 </div>
-
 
 <!-- APP -->
 <div id="appSection" class="hidden">
@@ -121,35 +120,37 @@ th, td{
 <label>LOA <input type="checkbox" id="loa"></label>
 <label>NCO Candidate <input type="checkbox" id="nco"></label>
 
+<!-- MEDALS -->
 <div class="dropdown">
 <button type="button" onclick="toggleMedals()">Select Medals</button>
 
 <div id="medalOptions" class="dropdown-content">
-<label><option>Stern zum Großkreuz des Eisernen Kreuzes</option></label>
-<label><option>Pour le merite</option></label>
-<label><option>Eisernes Kreuz 1. Klasse</option></label>
-<label><option>Eisernes Kreuz 2. Klasse</option></label>
-<label><option>Orden des Roten Atlers</option></label>
-<label><option>Militärverdienstkreuz</option></label>
-<label><option>Killstreak 1st class</option></label>
-<label><option>Killstreak 2nd class</option></label>
-<label><option>Killstreak 3rd class</option></label>
-<label><option>Killstreak 4th class</option></label>
-<label><option>Service medal 1st class</option></label>
-<label><option>Service medal 2nd class</option></label>
-<label><option>Service medal 3rd class</option></label>
-<label><option>Service medal 4th class</option></label>
-<label><option>National Mastery of Musket Shooting</option></label>
-<label><option>National Mastery of Bayonet Melee</option></label>
-<label><option>National Mastery of Sabre Melee</option></label>
-<label><option>Orden von Louise</option></label>
-<label><option>Blüchers guarde</option></label>
-<label><option>Kolonialmedaille 1. Klasse</option></label>
-<label><option>Kolonialmedaille 2. Klasse</option></label>
-<label><option>Kolonialmedaille 3. Klasse</option></label>
-<label><option>Kolonialmedaille 4. Klasse</option></label>
-<label><option>Maximilian-Orden</option></label>
-</select>
+
+<label><input type="checkbox" value="Stern zum Großkreuz des Eisernen Kreuzes"> Stern zum Großkreuz des Eisernen Kreuzes</label><br>
+<label><input type="checkbox" value="Pour le merite"> Pour le merite</label><br>
+<label><input type="checkbox" value="Eisernes Kreuz 1. Klasse"> Eisernes Kreuz 1. Klasse</label><br>
+<label><input type="checkbox" value="Eisernes Kreuz 2. Klasse"> Eisernes Kreuz 2. Klasse</label><br>
+<label><input type="checkbox" value="Orden des Roten Atlers"> Orden des Roten Atlers</label><br>
+<label><input type="checkbox" value="Militärverdienstkreuz"> Militärverdienstkreuz</label><br>
+<label><input type="checkbox" value="Killstreak 1st class"> Killstreak 1st class</label><br>
+<label><input type="checkbox" value="Killstreak 2nd class"> Killstreak 2nd class</label><br>
+<label><input type="checkbox" value="Killstreak 3rd class"> Killstreak 3rd class</label><br>
+<label><input type="checkbox" value="Killstreak 4th class"> Killstreak 4th class</label><br>
+<label><input type="checkbox" value="Service medal 1st class"> Service medal 1st class</label><br>
+<label><input type="checkbox" value="Service medal 2nd class"> Service medal 2nd class</label><br>
+<label><input type="checkbox" value="Service medal 3rd class"> Service medal 3rd class</label><br>
+<label><input type="checkbox" value="Service medal 4th class"> Service medal 4th class</label><br>
+<label><input type="checkbox" value="National Mastery of Musket Shooting"> National Mastery of Musket Shooting</label><br>
+<label><input type="checkbox" value="National Mastery of Bayonet Melee"> National Mastery of Bayonet Melee</label><br>
+<label><input type="checkbox" value="National Mastery of Sabre Melee"> National Mastery of Sabre Melee</label><br>
+<label><input type="checkbox" value="Orden von Louise"> Orden von Louise</label><br>
+<label><input type="checkbox" value="Blüchers guarde"> Blüchers guarde</label><br>
+<label><input type="checkbox" value="Kolonialmedaille 1. Klasse"> Kolonialmedaille 1. Klasse</label><br>
+<label><input type="checkbox" value="Kolonialmedaille 2. Klasse"> Kolonialmedaille 2. Klasse</label><br>
+<label><input type="checkbox" value="Kolonialmedaille 3. Klasse"> Kolonialmedaille 3. Klasse</label><br>
+<label><input type="checkbox" value="Kolonialmedaille 4. Klasse"> Kolonialmedaille 4. Klasse</label><br>
+<label><input type="checkbox" value="Maximilian-Orden"> Maximilian-Orden</label>
+
 </div>
 </div>
 
@@ -180,41 +181,23 @@ th, td{
 
 </div>
 
-
 <script>
 
 /* LOGIN */
-
 function signup(){
-let u=loginUser.value
-let p=loginPass.value
-
-if(!u||!p){authMessage.innerText="Fill all fields";return}
-
-if(localStorage.getItem("user_"+u)){
-authMessage.innerText="User exists";return
-}
-
-localStorage.setItem("user_"+u,p)
+if(!loginUser.value||!loginPass.value){authMessage.innerText="Fill fields";return}
+if(localStorage.getItem("user_"+loginUser.value)){authMessage.innerText="User exists";return}
+localStorage.setItem("user_"+loginUser.value,loginPass.value)
 authMessage.innerText="Account created"
 }
 
 function login(){
-let u=loginUser.value
-let p=loginPass.value
-
-if(localStorage.getItem("user_"+u)===p){
-
-localStorage.setItem("currentUser",u)
-
+if(localStorage.getItem("user_"+loginUser.value)===loginPass.value){
+localStorage.setItem("currentUser",loginUser.value)
 authSection.classList.add("hidden")
 appSection.classList.remove("hidden")
-
 loadMembers()
-
-}else{
-authMessage.innerText="Invalid login"
-}
+}else{authMessage.innerText="Invalid login"}
 }
 
 function logout(){
@@ -222,12 +205,10 @@ appSection.classList.add("hidden")
 authSection.classList.remove("hidden")
 }
 
-
 /* MEDALS */
-
 function toggleMedals(){
 let box=document.getElementById("medalOptions")
-box.style.display = box.style.display==="block" ? "none" : "block"
+box.style.display=box.style.display==="block"?"none":"block"
 }
 
 function getSelectedMedals(){
@@ -237,89 +218,44 @@ checked.forEach(c=>medals.push(c.value))
 return medals.join(", ")
 }
 
-
 /* MEMBERS */
-
 const table=document.getElementById("memberTable")
 
 function saveMembers(){
-
 let rows=document.querySelectorAll("#memberTable tr")
 let data=[]
-
 rows.forEach(r=>{
 let c=r.querySelectorAll("td")
-data.push({
-u:c[0].innerText,
-r:c[1].innerText,
-s:c[2].innerText,
-l:c[3].innerText,
-n:c[4].innerText,
-m:c[5].innerText
+data.push({u:c[0].innerText,r:c[1].innerText,s:c[2].innerText,l:c[3].innerText,n:c[4].innerText,m:c[5].innerText})
 })
-})
-
 localStorage.setItem("members_"+localStorage.getItem("currentUser"),JSON.stringify(data))
 }
 
 function loadMembers(){
-
 table.innerHTML=""
-
 let data=JSON.parse(localStorage.getItem("members_"+localStorage.getItem("currentUser")))||[]
-
-data.forEach(d=>{
-addRow(d.u,d.r,d.s,d.l,d.n,d.m)
-})
+data.forEach(d=>addRow(d.u,d.r,d.s,d.l,d.n,d.m))
 }
 
 function addRow(u,r,s,l,n,m){
-
 let row=document.createElement("tr")
-
-row.innerHTML=`
-<td>${u}</td>
-<td>${r}</td>
-<td>${s}</td>
-<td>${l}</td>
-<td>${n}</td>
-<td>${m}</td>
-<td><button class="editBtn">Edit</button></td>
-<td><button class="removeBtn">Remove</button></td>
-`
-
+row.innerHTML=`<td>${u}</td><td>${r}</td><td>${s}</td><td>${l}</td><td>${n}</td><td>${m}</td><td><button class="editBtn">Edit</button></td><td><button class="removeBtn">Remove</button></td>`
 table.appendChild(row)
 }
 
-
 /* ADD */
-
 memberForm.addEventListener("submit",e=>{
 e.preventDefault()
-
-addRow(
-username.value,
-rank.value,
-strikes.value,
-loa.checked?"Yes":"No",
-nco.checked?"Yes":"No",
-getSelectedMedals()
-)
-
+addRow(username.value,rank.value,strikes.value,loa.checked?"Yes":"No",nco.checked?"Yes":"No",getSelectedMedals())
 memberForm.reset()
 document.querySelectorAll("#medalOptions input").forEach(c=>c.checked=false)
-
 saveMembers()
 })
 
-
 /* EDIT + REMOVE */
-
 table.addEventListener("click",e=>{
-
 let row=e.target.closest("tr")
-if(!row) return
-
+if(!row)return
 let cells=row.querySelectorAll("td")
 
 if(e.target.classList.contains("removeBtn")){
@@ -333,23 +269,10 @@ cells[0].innerHTML=`<input value="${cells[0].innerText}">`
 cells[1].innerHTML=`<input value="${cells[1].innerText}">`
 cells[2].innerHTML=`<input type="number" value="${cells[2].innerText}">`
 
-cells[3].innerHTML=`<select>
-<option ${cells[3].innerText=="Yes"?"selected":""}>Yes</option>
-<option ${cells[3].innerText=="No"?"selected":""}>No</option>
-</select>`
+cells[3].innerHTML=`<select><option ${cells[3].innerText=="Yes"?"selected":""}>Yes</option><option ${cells[3].innerText=="No"?"selected":""}>No</option></select>`
+cells[4].innerHTML=`<select><option ${cells[4].innerText=="Yes"?"selected":""}>Yes</option><option ${cells[4].innerText=="No"?"selected":""}>No</option></select>`
 
-cells[4].innerHTML=`<select>
-<option ${cells[4].innerText=="Yes"?"selected":""}>Yes</option>
-<option ${cells[4].innerText=="No"?"selected":""}>No</option>
-</select>`
-
-cells[5].innerHTML=`
-<label><input type="checkbox" value="Bronze Medal"> Bronze</label><br>
-<label><input type="checkbox" value="Silver Medal"> Silver</label><br>
-<label><input type="checkbox" value="Gold Medal"> Gold</label><br>
-<label><input type="checkbox" value="Medal of Honor"> Honor</label><br>
-<label><input type="checkbox" value="Distinguished Service"> Service</label>
-`
+cells[5].innerHTML=document.getElementById("medalOptions").innerHTML
 
 e.target.textContent="Save"
 e.target.className="saveBtn"
@@ -373,21 +296,15 @@ e.target.className="editBtn"
 
 saveMembers()
 }
-
 })
 
-
 /* SEARCH */
-
 function searchMembers(){
-
 let val=searchInput.value.toLowerCase()
 let rows=table.getElementsByTagName("tr")
-
 for(let r of rows){
-r.style.display = r.innerText.toLowerCase().includes(val) ? "" : "none"
+r.style.display=r.innerText.toLowerCase().includes(val)?"":"none"
 }
-
 }
 
 </script>
