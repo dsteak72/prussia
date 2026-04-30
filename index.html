@@ -33,25 +33,21 @@ th, td{
     padding:10px;
 }
 
+/* Buttons */
 .editBtn{background:orange;}
 .saveBtn{background:limegreen;}
 .removeBtn{background:crimson;color:white;}
 
-.dropdown{
-    position:relative;
-    display:inline-block;
-}
-
-.dropdown-content{
+/* Medal panel */
+#medalBox{
     display:none;
-    position:absolute;
-    background:white;
     border:1px solid black;
     padding:10px;
-    text-align:left;
-    z-index:9999;
     max-height:200px;
     overflow-y:auto;
+    text-align:left;
+    background:white;
+    margin-top:10px;
 }
 </style>
 </head>
@@ -94,11 +90,13 @@ th, td{
 <label>LOA <input type="checkbox" id="loa"></label>
 <label>NCO <input type="checkbox" id="nco"></label>
 
-<div class="dropdown">
+<br>
+
 <button type="button" onclick="toggleMedals()">Select Medals</button>
 
-<div id="medalOptions" class="dropdown-content"></div>
-</div>
+<div id="medalBox"></div>
+
+<br>
 
 <button type="submit">Add Member</button>
 
@@ -123,6 +121,7 @@ th, td{
 
 <script>
 
+/* Medal list */
 const medalList = [
 "Stern zum Großkreuz des Eisernen Kreuzes",
 "Pour le merite",
@@ -150,27 +149,30 @@ const medalList = [
 "Maximilian-Orden"
 ]
 
-function buildMedalCheckboxes(selected=[]){
-return medalList.map(m => 
-`<label><input type="checkbox" value="${m}" ${selected.includes(m)?"checked":""}> ${m}</label><br>`
-).join("")
+const medalBox = document.getElementById("medalBox")
+
+function buildMedals(selected=[]){
+    medalBox.innerHTML = medalList.map(m =>
+        `<label><input type="checkbox" value="${m}" ${selected.includes(m)?"checked":""}> ${m}</label><br>`
+    ).join("")
 }
 
-document.getElementById("medalOptions").innerHTML = buildMedalCheckboxes()
+buildMedals()
 
 function toggleMedals(){
-let box=document.getElementById("medalOptions")
-box.style.display=box.style.display==="block"?"none":"block"
+    medalBox.style.display = medalBox.style.display === "block" ? "none" : "block"
 }
 
 function getSelectedMedals(container){
-let checked = container.querySelectorAll("input:checked")
-let medals=[]
-checked.forEach(c=>medals.push(c.value))
-return medals
+    let checked = container.querySelectorAll("input:checked")
+    let list=[]
+    checked.forEach(c=>list.push(c.value))
+    return list
 }
 
-const table=document.getElementById("memberTable")
+/* Table */
+
+const table = document.getElementById("memberTable")
 
 function addRow(u,r,s,l,n,m){
 
@@ -190,10 +192,12 @@ row.innerHTML=`
 table.appendChild(row)
 }
 
+/* Add */
+
 memberForm.addEventListener("submit",e=>{
 e.preventDefault()
 
-let medals = getSelectedMedals(document.getElementById("medalOptions"))
+let medals = getSelectedMedals(medalBox)
 
 addRow(
 username.value,
@@ -205,13 +209,16 @@ medals
 )
 
 memberForm.reset()
-document.getElementById("medalOptions").innerHTML = buildMedalCheckboxes()
+buildMedals()
+medalBox.style.display="none"
 })
+
+/* Edit */
 
 table.addEventListener("click",e=>{
 
 let row=e.target.closest("tr")
-if(!row)return
+if(!row) return
 
 let cells=row.querySelectorAll("td")
 
@@ -221,16 +228,18 @@ row.remove()
 
 if(e.target.classList.contains("editBtn")){
 
-let currentMedals = cells[5].innerText.split(", ").filter(x=>x)
+let current = cells[5].innerText.split(", ").filter(x=>x)
 
 cells[0].innerHTML=`<input value="${cells[0].innerText}">`
 cells[1].innerHTML=`<input value="${cells[1].innerText}">`
 cells[2].innerHTML=`<input type="number" value="${cells[2].innerText}">`
 
-cells[3].innerHTML=`<select><option ${cells[3].innerText=="Yes"?"selected":""}>Yes</option><option ${cells[3].innerText=="No"?"selected":""}>No</option></select>`
-cells[4].innerHTML=`<select><option ${cells[4].innerText=="Yes"?"selected":""}>Yes</option><option ${cells[4].innerText=="No"?"selected":""}>No</option></select>`
+cells[3].innerHTML=`<select><option ${cells[3].innerText=="Yes"?"selected":""}>Yes</option><option>No</option></select>`
+cells[4].innerHTML=`<select><option ${cells[4].innerText=="Yes"?"selected":""}>Yes</option><option>No</option></select>`
 
-cells[5].innerHTML = buildMedalCheckboxes(currentMedals)
+cells[5].innerHTML = medalList.map(m =>
+`<label><input type="checkbox" value="${m}" ${current.includes(m)?"checked":""}> ${m}</label><br>`
+).join("")
 
 e.target.textContent="Save"
 e.target.className="saveBtn"
