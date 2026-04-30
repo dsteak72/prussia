@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Unit Management</title>
+
+<style>
+body{
+    font-family: Arial;
+    background:white;
+    color:black;
+    padding:30px;
+    text-align:center;
+}
+
+input, select, button{
+    padding:8px;
+    margin:5px;
+}
+
+#searchInput{
+    width:300px;
+    margin-bottom:15px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#333;
+    color:white;
+}
+
+th, td{
+    border:1px solid #555;
+    padding:10px;
+}
+
+.editBtn{background:orange;}
+.saveBtn{background:limegreen;}
+.removeBtn{background:crimson;color:white;}
+
+.hidden{display:none;}
+
+.dropdown{
+    position:relative;
+    display:inline-block;
+}
+
+.dropdown-content{
+    display:none;
+    position:absolute;
+    background:white;
+    border:1px solid black;
+    padding:10px;
+    text-align:left;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="authSection">
+
+<h1>Login</h1>
+
+<input id="loginUser" placeholder="Username">
+<input id="loginPass" type="password" placeholder="Password">
+
+<br>
+
+<button onclick="login()">Login</button>
+<button onclick="signup()">Sign Up</button>
+
+<p id="authMessage"></p>
+
+</div>
+
+
+<!-- APP -->
+<div id="appSection" class="hidden">
+
+<h1>Member Management</h1>
+<button onclick="logout()">Logout</button>
+
+<form id="memberForm">
+
+<input id="username" placeholder="Username" required>
+
+<select id="rank">
+<option>Recrut</option>
+<option>Soldat</option>
+<option>Gemeiner</option>
+<option>Gefreiter</option>
+<option>Sabsgefreiter</option>
+<option>Obergefreiter</option>
+<option>Korporal</option>
+<option>Sergeant</option>
+<option>Unterfeldwebel</option>
+<option>Feldwebel</option>
+<option>Fänrich</option>
+<option>Leutnant</option>
+<option>Oberleutnant</option>
+<option>Hauptmann</option>
+<option>Major</option>
+<option>Obertsleutnant</option>
+<option>Oberst</option>
+<option>Generalmajor</option>
+<option>Generalleutnant</option>
+<option>Feldmarschall</option>
+<option>Chef de Generalstabes</option>
+<option>König von Preußen</option>
+</select>
+
+<input type="number" id="strikes" placeholder="Strikes" required>
+
+<label>LOA <input type="checkbox" id="loa"></label>
+<label>NCO Candidate <input type="checkbox" id="nco"></label>
+
+<div class="dropdown">
+<button type="button" onclick="toggleMedals()">Select Medals</button>
+
+<div id="medalOptions" class="dropdown-content">
+<label><option>Stern zum Großkreuz des Eisernen Kreuzes</option></label>
+<label><option>Pour le merite</option></label>
+<label><option>Eisernes Kreuz 1. Klasse</option></label>
+<label><option>Eisernes Kreuz 2. Klasse</option></label>
+<label><option>Orden des Roten Atlers</option></label>
+<label><option>Militärverdienstkreuz</option></label>
+<label><option>Killstreak 1st class</option></label>
+<label><option>Killstreak 2nd class</option></label>
+<label><option>Killstreak 3rd class</option></label>
+<label><option>Killstreak 4th class</option></label>
+<label><option>Service medal 1st class</option></label>
+<label><option>Service medal 2nd class</option></label>
+<label><option>Service medal 3rd class</option></label>
+<label><option>Service medal 4th class</option></label>
+<label><option>National Mastery of Musket Shooting</option></label>
+<label><option>National Mastery of Bayonet Melee</option></label>
+<label><option>National Mastery of Sabre Melee</option></label>
+<label><option>Orden von Louise</option></label>
+<label><option>Blüchers guarde</option></label>
+<label><option>Kolonialmedaille 1. Klasse</option></label>
+<label><option>Kolonialmedaille 2. Klasse</option></label>
+<label><option>Kolonialmedaille 3. Klasse</option></label>
+<label><option>Kolonialmedaille 4. Klasse</option></label>
+<label><option>Maximilian-Orden</option></label>
+</select>
+</div>
+</div>
+
+<button type="submit">Add Member</button>
+
+</form>
+
+<h2>Member List</h2>
+
+<input id="searchInput" placeholder="Search..." onkeyup="searchMembers()">
+
+<table>
+<thead>
+<tr>
+<th>Username</th>
+<th>Rank</th>
+<th>Strikes</th>
+<th>LOA</th>
+<th>NCO Candidate</th>
+<th>Medals</th>
+<th>Edit</th>
+<th>Remove</th>
+</tr>
+</thead>
+
+<tbody id="memberTable"></tbody>
+</table>
+
+</div>
+
+
+<script>
+
+/* LOGIN */
+
+function signup(){
+let u=loginUser.value
+let p=loginPass.value
+
+if(!u||!p){authMessage.innerText="Fill all fields";return}
+
+if(localStorage.getItem("user_"+u)){
+authMessage.innerText="User exists";return
+}
+
+localStorage.setItem("user_"+u,p)
+authMessage.innerText="Account created"
+}
+
+function login(){
+let u=loginUser.value
+let p=loginPass.value
+
+if(localStorage.getItem("user_"+u)===p){
+
+localStorage.setItem("currentUser",u)
+
+authSection.classList.add("hidden")
+appSection.classList.remove("hidden")
+
+loadMembers()
+
+}else{
+authMessage.innerText="Invalid login"
+}
+}
+
+function logout(){
+appSection.classList.add("hidden")
+authSection.classList.remove("hidden")
+}
+
+
+/* MEDALS */
+
+function toggleMedals(){
+let box=document.getElementById("medalOptions")
+box.style.display = box.style.display==="block" ? "none" : "block"
+}
+
+function getSelectedMedals(){
+let checked=document.querySelectorAll("#medalOptions input:checked")
+let medals=[]
+checked.forEach(c=>medals.push(c.value))
+return medals.join(", ")
+}
+
+
+/* MEMBERS */
+
+const table=document.getElementById("memberTable")
+
+function saveMembers(){
+
+let rows=document.querySelectorAll("#memberTable tr")
+let data=[]
+
+rows.forEach(r=>{
+let c=r.querySelectorAll("td")
+data.push({
+u:c[0].innerText,
+r:c[1].innerText,
+s:c[2].innerText,
+l:c[3].innerText,
+n:c[4].innerText,
+m:c[5].innerText
+})
+})
+
+localStorage.setItem("members_"+localStorage.getItem("currentUser"),JSON.stringify(data))
+}
+
+function loadMembers(){
+
+table.innerHTML=""
+
+let data=JSON.parse(localStorage.getItem("members_"+localStorage.getItem("currentUser")))||[]
+
+data.forEach(d=>{
+addRow(d.u,d.r,d.s,d.l,d.n,d.m)
+})
+}
+
+function addRow(u,r,s,l,n,m){
+
+let row=document.createElement("tr")
+
+row.innerHTML=`
+<td>${u}</td>
+<td>${r}</td>
+<td>${s}</td>
+<td>${l}</td>
+<td>${n}</td>
+<td>${m}</td>
+<td><button class="editBtn">Edit</button></td>
+<td><button class="removeBtn">Remove</button></td>
+`
+
+table.appendChild(row)
+}
+
+
+/* ADD */
+
+memberForm.addEventListener("submit",e=>{
+e.preventDefault()
+
+addRow(
+username.value,
+rank.value,
+strikes.value,
+loa.checked?"Yes":"No",
+nco.checked?"Yes":"No",
+getSelectedMedals()
+)
+
+memberForm.reset()
+document.querySelectorAll("#medalOptions input").forEach(c=>c.checked=false)
+
+saveMembers()
+})
+
+
+/* EDIT + REMOVE */
+
+table.addEventListener("click",e=>{
+
+let row=e.target.closest("tr")
+if(!row) return
+
+let cells=row.querySelectorAll("td")
+
+if(e.target.classList.contains("removeBtn")){
+row.remove()
+saveMembers()
+}
+
+if(e.target.classList.contains("editBtn")){
+
+cells[0].innerHTML=`<input value="${cells[0].innerText}">`
+cells[1].innerHTML=`<input value="${cells[1].innerText}">`
+cells[2].innerHTML=`<input type="number" value="${cells[2].innerText}">`
+
+cells[3].innerHTML=`<select>
+<option ${cells[3].innerText=="Yes"?"selected":""}>Yes</option>
+<option ${cells[3].innerText=="No"?"selected":""}>No</option>
+</select>`
+
+cells[4].innerHTML=`<select>
+<option ${cells[4].innerText=="Yes"?"selected":""}>Yes</option>
+<option ${cells[4].innerText=="No"?"selected":""}>No</option>
+</select>`
+
+cells[5].innerHTML=`
+<label><input type="checkbox" value="Bronze Medal"> Bronze</label><br>
+<label><input type="checkbox" value="Silver Medal"> Silver</label><br>
+<label><input type="checkbox" value="Gold Medal"> Gold</label><br>
+<label><input type="checkbox" value="Medal of Honor"> Honor</label><br>
+<label><input type="checkbox" value="Distinguished Service"> Service</label>
+`
+
+e.target.textContent="Save"
+e.target.className="saveBtn"
+}
+
+else if(e.target.classList.contains("saveBtn")){
+
+cells[0].textContent=cells[0].querySelector("input").value
+cells[1].textContent=cells[1].querySelector("input").value
+cells[2].textContent=cells[2].querySelector("input").value
+cells[3].textContent=cells[3].querySelector("select").value
+cells[4].textContent=cells[4].querySelector("select").value
+
+let selected=cells[5].querySelectorAll("input:checked")
+let medals=[]
+selected.forEach(c=>medals.push(c.value))
+cells[5].textContent=medals.join(", ")
+
+e.target.textContent="Edit"
+e.target.className="editBtn"
+
+saveMembers()
+}
+
+})
+
+
+/* SEARCH */
+
+function searchMembers(){
+
+let val=searchInput.value.toLowerCase()
+let rows=table.getElementsByTagName("tr")
+
+for(let r of rows){
+r.style.display = r.innerText.toLowerCase().includes(val) ? "" : "none"
+}
+
+}
+
+</script>
+
+</body>
+</html>
